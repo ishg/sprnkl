@@ -1,0 +1,87 @@
+.input-field {
+    /* label color */
+    label,
+    input[type=text]:focus + label,
+    input[type=email]:focus + label,
+    input[type=password]:focus + label,
+    input[type=tel]:focus + label,
+    input[type=number]:focus + label,
+    .prefix.active,
+    textarea.materialize-textarea:focus:not([readonly]) + label {
+      color: #7e57c2;
+    }
+
+    /* label underline focus color */
+    input[type=text]:focus,
+    input[type=email]:focus,
+    input[type=password]:focus,
+    input[type=tel]:focus,
+    input[type=number]:focus,
+    textarea.materialize-textarea:focus:not([readonly]) {
+      border-bottom: 1px solid #7e57c2;
+      box-shadow: 0 1px 0 0 #7e57c2;
+    }
+
+    /* invalid color */
+    input[type=text].invalid,
+    input[type=email].invalid,
+    input[type=password].invalid,
+    input[type=tel].invalid,
+    input[type=number].invalid,
+    input[type=date].invalid, {
+      border-bottom: 1px solid #ff5252;
+      box-shadow: 0 1px 0 0 #ff5252;
+    }
+    input[type=text].invalid + label,
+    input[type=email].invalid + label,
+    input[type=password].invalid + label,
+    input[type=tel].invalid + label,
+    input[type=number].invalid + label,
+    input[type=date].invalid + label, {
+      color: #d32f2f;
+    }
+  }
+
+  [type="radio"]:checked + label:after{
+    background-color: $yama-deep-purple;
+    border: 2px solid $yama-deep-purple;
+  }
+
+  [type="checkbox"].filled-in:checked + label:after {
+    border: 2px solid $yama-deep-purple;
+    background-color: $yama-deep-purple;
+
+  [type="checkbox"]:checked + label:before {
+    border-right: 2px solid $yama-deep-purple;
+    border-bottom: 2px solid $yama-deep-purple;
+  }
+}
+
+  
+
+  // Datepicker box
+
+  .picker__box {
+    border: 1px solid white;
+    border-top-color: white;
+  }
+  .picker__nav--prev:hover, .picker__nav--next:hover {
+    background: #d1c4e9;
+  }
+  .picker__date-display, .picker__weekday-display, .picker__day--selected, .picker__day--selected:hover, .picker--focused .picker__day--selected {
+    background-color: #7e57c2;
+  }
+  .picker__day.picker__day--today, .picker__close, .picker__today {
+    color: #7e57c2;
+  }
+
+  .help-block {
+    span {
+      color: #d32f2f;
+      font-size: .75rem;
+    }
+  }
+
+  .form-err-msg {
+    margin-left: 3rem;
+  }

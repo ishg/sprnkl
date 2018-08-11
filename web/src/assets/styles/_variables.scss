@@ -1,0 +1,55 @@
+// $smt-purple: #A593E0;
+// $smt-deep-purple: #7E57C2; 
+// $smt-black: #566270;
+// $smt-white: #FFFFF3;
+// $smt-gray: #E0E3DA;
+
+
+$smt-purple: #b39ddb;
+$smt-black: #566270;
+$smt-white: #FFFFF3;
+//$smt-black: #3C4858;
+
+
+//$smt-deep-purple: #9C27BC; 
+$smt-deep-purple: #673ab7; 
+$smt-gray: #d9e1e8;
+$smt-blue-gray: #9baec8;
+$smt-dark-gray: #424242;
+$smt-red: #f44336;
+$smt-orange: #ff9800;
+$smt-green: #4caf50;
+
+// Colors
+
+$black:        hsl(0, 0%, 4%) !default
+$black-bis:    hsl(0, 0%, 7%) !default
+$black-ter:    hsl(0, 0%, 14%) !default
+
+$grey-darker:  hsl(0, 0%, 21%) !default
+$grey-dark:    hsl(0, 0%, 29%) !default
+$grey:         hsl(0, 0%, 48%) !default
+$grey-light:   hsl(0, 0%, 71%) !default
+$grey-lighter: hsl(0, 0%, 86%) !default
+
+$white-ter:    hsl(0, 0%, 96%) !default
+$white-bis:    hsl(0, 0%, 98%) !default
+$white:        hsl(0, 0%, 100%) !default
+
+$orange:       hsl(14,  100%, 53%) !default
+$yellow:       hsl(48,  100%, 67%) !default
+$green:        hsl(141, 71%,  48%) !default
+$turquoise:    hsl(171, 100%, 41%) !default
+$cyan:         hsl(204, 86%,  53%) !default
+$blue:         hsl(217, 71%,  53%) !default
+$blue-light:   hsla(205, 86%,  53%, 0.43) !default
+$purple:       hsl(271, 100%, 71%) !default
+$red:          hsl(348, 100%, 61%) !default
+
+
+$easing: ease-out !default
+$radius-small: 2px !default
+$radius: 3px !default
+$radius-large: 5px !default
+$radius-rounded: 290486px !default
+$speed: 86ms !default
