@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<head>
+	<title>Sprnkl</title>
+</head>
+<body>
+	<h1>RPi Web Server</h1>
+	{% for zone in zones %}
+	<h2>{{ zone.name }}</h2>
+	<a href="/{{zone.pin}}/off">Turn off</a>
+	<a href="/{{zone.pin}}/on">Turn on</a>
+	{% endfor %}
+</body>
+</html>
