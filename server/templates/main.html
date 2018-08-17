@@ -1,13 +1,53 @@
 <!DOCTYPE html>
 <head>
 	<title>Sprnkl</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Compiled and minified CSS -->
+    	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+
+    	<!-- Compiled and minified JavaScript -->
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<style>
+	html {
+    		height: 100%;
+	}
+	body {
+    		height: 100%;
+    		margin: 0;
+		background-color: #63a4ff;
+		background-image: linear-gradient(315deg, #63a4ff 0%, #83eaf1 74%);
+		background-repeat: no-repeat;
+	}
+	</style>    
+
 </head>
 <body>
-	<h1>RPi Web Server</h1>
-	{% for zone in zones %}
-	<h2>{{ zone.name }}</h2>
-	<a href="/{{zone.pin}}/off">Turn off</a>
-	<a href="/{{zone.pin}}/on">Turn on</a>
-	{% endfor %}
+	<div class="container">
+	    <div class="row">
+		<div class="col s12">
+		<div class="card">
+		    <ul class="collection with-header">
+			<li class="collection-header"><h4>Hobstone Sprinklers</h4></li>
+			{% for zone in zones %}
+			<li class="collection-item">
+			<div>{{zone.name}}
+			{% if zone.status %}
+			<a href="/{{zone.pin}}/off" class="secondary-content">
+			<i class="material-icons red-text">power_off</i>
+			</a>
+			{% else %}
+			<a href="/{{zone.pin}}/on" class="secondary-content">
+			<i class="material-icons green-text">power_settings_new</i>
+			</a>
+			{% endif %}
+			</div>
+			</li>
+			{% endfor %}
+		    </ul>
+		</div>
+		</div>
+	    </div>
+	</div>
 </body>
 </html>

@@ -6,16 +6,16 @@ app = Flask(__name__)
 GPIO.setmode(GPIO.BCM)
 
 zones = [
-    {"pin": 11, "name": "zone 1-4 (back tree)"},
-    {"pin": 9, "name": "zone 2-6 (back garden)"},
-    {"pin": 10, "name": "zone 3-3 (veg garden)"},
-    {"pin": 24, "name": "zone 4-5 (broken)"},
-    {"pin": 23, "name": "zone 5-2 (drip)"},
-    {"pin": 4, "name": "zone 6-1 (overflow)"},
-    {"pin": 14, "name": "zone 9"},
-    {"pin": 18, "name": "zone 10"},
-    {"pin": 15, "name": "zone 11"},
-    {"pin": 3,"name": "zone 12"},
+    {"pin": 11, "name": "zone 1-4 (back tree)", "status": 0},
+    {"pin": 9, "name": "zone 2-6 (back garden)", "status": 0},
+    {"pin": 10, "name": "zone 3-3 (veg garden)", "status": 0},
+    {"pin": 24, "name": "zone 4-5 (broken)", "status": 0},
+    {"pin": 23, "name": "zone 5-2 (drip)", "status": 0},
+    {"pin": 4, "name": "zone 6-1 (overflow)", "status": 0},
+    {"pin": 14, "name": "zone 9 (front lawn right)", "status": 0},
+    {"pin": 18, "name": "zone 10 (front lawn left)", "status": 0},
+    {"pin": 15, "name": "zone 11 (front kyaaris)", "status": 0},
+    {"pin": 3,"name": "zone 12 (front kyaaris)", "status": 0},
 ]
 
 for zone in zones:
@@ -24,6 +24,9 @@ for zone in zones:
 
 @app.route("/")
 def main():
+    for zone in zones:
+	zone["status"] = GPIO.input(zone["pin"])
+    #print zones
     templateData = { 'zones': zones }
     return render_template('main.html', **templateData)
 
@@ -35,6 +38,9 @@ def action(changePin, action):
         GPIO.output(changePin, GPIO.HIGH)
     if action == "off":
         GPIO.output(changePin, GPIO.LOW)
+    for zone in zones:
+	zone["status"] = GPIO.input(zone["pin"])
+    #print zones
     templateData = {'zones': zones}
     return render_template('main.html', **templateData)
 
