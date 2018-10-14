@@ -11,12 +11,18 @@ export default {
   warningText: '#666804',
   noticeBackground: '#2A2D34',
   noticeText: '#ffffff',
-  yellow: '#F2C14E',
-  greenPrimary: '#20BF55',
+  yellow: '#FFDC14',
+  greenPrimary: '#4CAF50',
   black: '#2A2D34',
   grayLight: '#cccccc',
-  grayDark: '#2f95dc',
+  grayDark: 'rgba(51, 51, 59, 0.8)',
   red: '#DE3C4B',
-  blue: '#2191FB',
-  white: '#ffffff'
+  // blue: '#2191FB',
+  white: '#ffffff',
+  blue: '#3291D6',
+  secondary: '#33333B',
+  success: '#27CC6A',
+  danger: '#E9212E',
+  accentLight: '#E9E9EF',
+  accentDark: 'rgba(51, 51, 59, 0.8)'
 }

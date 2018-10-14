@@ -5,13 +5,13 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 import TabBarIcon from '../components/TabBarIcon'
 import HomeScreen from '../screens/HomeScreen'
 import SettingsScreen from '../screens/SettingsScreen'
-import EditScreen from '../screens/EditScreen'
+import DetailsScreen from '../screens/DetailsScreen'
 
 import Colors from '../constants/Colors'
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-  Edit: EditScreen
+  Details: DetailsScreen
 }, {
   initalRouteName: 'Edit',
   mode: 'modal'
