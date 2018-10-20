@@ -11,11 +11,12 @@ import {
   Dimensions, 
   Alert,
   ScrollView,
-  Slider
+  Slider,
+  Switch
 } from 'react-native'
 
-import { RkSwitch } from 'react-native-ui-kitten'
 import moment from 'moment'
+import Picker from 'react-native-modal-datetime-picker'
 
 import { ImagePicker, Permissions } from 'expo'
 import { Feather } from '@expo/vector-icons'
@@ -30,13 +31,13 @@ import { AsyncStorage } from 'react-native'
 
 // TODO
 // 1. Add Pin input
-// 2. Save and navigate backg
+// 2. Save and navigate back
 // 3. Reload Spinner
 
 export default class DetailsScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
     return {
-      title: navigation.getParam('mode') === 'new' ? 'Add Zone' : 'Edit Zone',
+      headerTitle: navigation.getParam('mode') === 'new' ? 'Add Zone' : 'Edit Zone'
     }
   };
   constructor (props) {
@@ -64,23 +65,34 @@ export default class DetailsScreen extends React.Component {
 
     this.state = {
       weekdays: ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su'],
+      pickerVisible: false,
       loading: false,
       placeholder: 'Zone Name',
+      formTitleInvalid: false,
+      formDaysInvalid: false,
       formChanged: false,
-      image: zone.imageURL,
+      image: zone.url ? '' : '',
       WIDTH: Layout.window.width,
       HEIGHT: Layout.window.height,
       title: zone['title'],
       running: zone['status'],
       scheduled: zone.schedule.enabled,
       freq: zone.schedule.freq,
-      days: zone.schedule.days,
+      days: zone.schedule.days ? zone.schedule.days : [],
       pin: zone.pin,
-      startTime: zone.schedule.startTime,
+      startTime: zone.schedule.startTime.length > 0 ? zone.schedule.startTime : moment().format('hh:mm a'),
       duration: zone.schedule.duration
     }
-    console.log(this.state)
   }
+
+  _showDateTimePicker = () => this.setState({ pickerVisible: true });
+
+  _hideDateTimePicker = () => this.setState({ pickerVisible: false });
+
+  _handleDatePicked = (date) => {
+    this.setState({startTime: moment.utc(date).local().format('hh:mm a')})
+    this._hideDateTimePicker();
+  };
 
   _requestPermission = async (type) => {
     const { status } = await Permissions.askAsync(type)
@@ -147,15 +159,26 @@ export default class DetailsScreen extends React.Component {
   async _saveZone() {
     console.log(this.state)
     // Validate title and image
-    if (this.state.title.length > 0) {
-      this.setState({loading: true})
-      // await AsyncStorage.setItem('HOST', this.state.url);
-      setTimeout(() => { 
-        this.setState({loading: false,formChanged: false})
-      }, 1000)
+
+    if (this.state.title.length === 0) {
+      this.setState({formTitleInvalid: true})
+      return
     } else {
-      console.log('form was invalid')
+      this.setState({formTitleInvalid: false})
     }
+
+    if (this.state.freq === 'weekly' && this.state.days.length === 0) {
+      this.setState({formDaysInvalid: true})
+      return
+    } else {
+      this.setState({formDaysInvalid: false})
+    }
+
+    this.setState({loading: true})
+    // await AsyncStorage.setItem('HOST', this.state.url);
+    setTimeout(() => { 
+      this.setState({loading: false,formChanged: false})
+    }, 1000)
   }
 
   render() {
@@ -200,7 +223,7 @@ export default class DetailsScreen extends React.Component {
               justifyContent: 'flex-start',
               }}>
               <TextInput
-                style={styles.formInput}
+                style={[styles.formInput, this.state.formTitleInvalid && {'borderColor': Colors.danger, borderWidth: 1}]}
                 onChangeText={(title) => {
                   this.setState({title})
                   this.setState({formChanged: true})
@@ -218,9 +241,11 @@ export default class DetailsScreen extends React.Component {
                 marginRight: 20,
               }}>
                 <StyledText style={{ paddingLeft: 10, fontSize: 16, marginRight: 20,color: Colors.grayDark}}>Schedule On/Off</StyledText>
-                <RkSwitch
-                  value={this.state.scheduled}
+                <Switch
+                  onTintColor={Colors.greenPrimary}
+                  thumbTintColor={Colors.white}
                   onValueChange={this._toggleSchedule}
+                  value={this.state.scheduled}
                 />
               </View>
             </View>
@@ -228,6 +253,12 @@ export default class DetailsScreen extends React.Component {
           {
             this.state.scheduled &&
             <View>
+              <Picker
+                mode={'time'}
+                isVisible={this.state.pickerVisible}
+                onConfirm={this._handleDatePicked}
+                onCancel={this._hideDateTimePicker}
+              />
               <View style={{
                 flexDirection: 'column', 
                 justifyContent: 'flex-start', 
@@ -247,7 +278,7 @@ export default class DetailsScreen extends React.Component {
                   }}>
                   <StyledText>Frequency</StyledText>
                   <TouchableOpacity onPress={this._toggleFreq} style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-                    <StyledText style={{fontFamily: 'rubik-bold', color: Colors.greenPrimary}}>{this.state.freq}</StyledText>
+                    <StyledText style={{fontFamily: 'rubik-bold', color: Colors.greenPrimary}}>{this.state.freq.charAt(0).toUpperCase() + this.state.freq.substr(1)}</StyledText>
                     <Feather name='chevron-right' size={20} color={Colors.grayDark} />
                   </TouchableOpacity>
                 </View>
@@ -261,7 +292,16 @@ export default class DetailsScreen extends React.Component {
                     borderColor: 'transparent',
                     borderTopColor: Colors.accentLight,
                     }}>
-                    <StyledText>Choose Days</StyledText>
+                    <StyledText style={this.state.formDaysInvalid && {color: Colors.danger}}>Choose Days
+                    {
+                      this.state.formDaysInvalid && 
+                      <View style={{paddingLeft: 5}}>
+                        <Feather name='alert-circle' size={12} color={Colors.danger} />
+                      </View>
+
+                    }
+                    </StyledText>
+
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, marginTop: 10}}>
                       {
                         this.state.weekdays.map((day, i) => 
@@ -295,7 +335,7 @@ export default class DetailsScreen extends React.Component {
                   borderTopColor: Colors.accentLight,
                   }}>
                   <StyledText>Start Time</StyledText>
-                  <TouchableOpacity onPress={this._chooseStartTime} style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
+                  <TouchableOpacity onPress={this._showDateTimePicker} style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
                     <StyledText style={{fontFamily: 'rubik-bold', color: Colors.greenPrimary}}>{this.state.startTime}</StyledText>
                     <Feather name='chevron-right' size={20} color={Colors.grayDark} />
                   </TouchableOpacity>
@@ -328,7 +368,7 @@ export default class DetailsScreen extends React.Component {
               </View>
             </View>
           }
-          <View style={{paddingTop: 40}}>
+          <View style={{padding: 20}}>
             <Button
               onPress={() => this._saveZone()}
               title='Save'
@@ -347,6 +387,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   button: {
+    margin: 20,
     alignItems: 'center',
     backgroundColor: Colors.white,
     borderRadius: 10,

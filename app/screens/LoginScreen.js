@@ -6,7 +6,8 @@ import {
   Button,
   TextInput,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native'
 import Loader from '../components/Loader'
 import StyledText from '../components/StyledText'
