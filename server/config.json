@@ -1,0 +1,38 @@
+{
+	"zones": [
+	    {"id": 1, "pin": 11, "name": "Back tree", "status": 0},
+	    {"id": 2, "pin": 9, "name": "Back garden", "status": 0},
+	    {"id": 3, "pin": 10, "name": "Vegetable garden", "status": 0},
+	    {"id": 4, "pin": 24, "name": "DO NOT USE broken", "status": 0},
+	    {"id": 5, "pin": 23, "name": "Drip", "status": 0},
+	    {"id": 6, "pin": 4, "name": "DO NOT USE overflow", "status": 0},
+	    {"id": 7, "pin": 14, "name": "Front lawn right", "status": 0},
+	    {"id": 8, "pin": 18, "name": "Front lawn left", "status": 0},
+	    {"id": 9, "pin": 15, "name": "Front kyaaris", "status": 0},
+	    {"id": 10, "pin": 3,"name": "Front kyaaris", "status": 0}
+	],
+	"schedules": [
+		{
+			"id": 1,
+			"name": "Morning",
+			"days": ["M", "T", "W", "Th", "F", "Sa", "Su"],
+			"time": {
+				"hour": 10,
+				"minute": 20
+			},
+			"duration": 10,
+			"enabled": true
+		},
+		{
+			"id": 2,
+			"name": "Evening",
+			"days": ["M", "T", "W", "Th", "F", "Sa", "Su"],
+			"time": {
+				"hour": 10,
+				"minute": 20
+			},
+			"duration": 10,
+			"enabled": false
+		}
+	]
+}

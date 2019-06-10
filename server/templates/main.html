@@ -2,52 +2,232 @@
 <head>
 	<title>Sprnkl</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
 	<!-- Compiled and minified CSS -->
-    	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-    	<!-- Compiled and minified JavaScript -->
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+		
+		<script src="https://momentjs.com/downloads/moment.js"></script>
+
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+		    var elems = document.querySelectorAll('.collapsible');
+		    var instances = M.Collapsible.init(elems);
+
+
+		    elems = document.querySelectorAll('.timepicker');
+		    instances = M.Timepicker.init(elems);
+  			for (var i = 0; i < elems.length; i++) {
+  				elems[i].value = moment().format('LT')
+  			}
+
+  			var elems = document.querySelectorAll('select');
+		    var instances = M.FormSelect.init(elems);
+
+		    elems = document.querySelectorAll('.modal');
+    		instances = M.Modal.init(elems);
+
+		  });
+
+		  function updateTextInput(id, val) {
+        document.getElementById(id + '_value').value = val +" minutes"; 
+      }
+		</script>
+
+
 	<style>
 	html {
-    		height: 100%;
+  	height: 100%;
 	}
 	body {
-    		height: 100%;
-    		margin: 0;
+  	height: 100%;
+  	margin: 0;
 		background-color: #63a4ff;
 		background-image: linear-gradient(315deg, #63a4ff 0%, #83eaf1 74%);
 		background-repeat: no-repeat;
 	}
-	</style>    
-
+	[type="checkbox"] + span:not(.lever) {
+		padding-left: 25px;
+		color: black;
+	}
+	</style>
 </head>
 <body>
+
+	 <div id="new_modal" class="modal">
+    <div class="modal-content">
+      <h4>New Schedule</h4>
+	      <form class="col s12" id="new_schedule_form">
+	      	<br>
+					<strong>Choose Zones to Schedule:</strong>
+					<div class="input-field" style="margin-bottom: 0">
+				    <select multiple id="new_schedule_zones">
+				    	<option value="" disabled selected>Choose your zone</option>
+				      {% for z in zones %}
+				      <option value="new__schedule_zone_{{z.id}}">{{z.name}}</option>
+				      {% endfor %}
+				    </select>
+				  </div>
+				  <br>
+			    <strong>Choose Days:</strong>
+			    <p>
+			    {% for d in ["M", "T", "W", "Th", "F", "Sa", "Su"] %}
+			      <label style="padding-right: 5px !important;">
+			        <input type="checkbox" id="new_schedule_day_{{d}}" class="filled-in" />
+			        <span>{{d}}</span>
+			      </label>
+			    {% endfor %}
+			  	</p>
+			  	<strong>Choose Time:</strong>
+			  	<input type="text" id="new_schedule_time" value="moment().format('LT');" class="timepicker">
+			  	<br>
+			  	<strong>Choose Duration</strong>
+			  	<input class="right" type="text" value="5 minutes" id="new_schedule_duration_value"/>
+			  	<p class="range-field">
+			      <input type="range" value="5" id="new_schedule_duration" onchange="updateTextInput(this.id, this.value);" min="5" max="60" step="5" />
+			    </p>
+
+				  <div class="row">
+				  	<div class="col s8">
+				  		<div class="switch">
+				  			Enabled
+						    <label style="padding-left: 10px;">
+						      Off
+						      <input type="checkbox">
+						      <span class="lever"></span>
+						      On
+						    </label>
+					  	</div>
+				  	</div>
+				  </div>
+				</form>
+
+
+
+    </div>
+    <div class="modal-footer">
+    	<a href="#!" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Save</a>
+    </div>
+  </div>
+
+
+  <div id="delete_modal" class="modal">
+    <div class="modal-content">
+      <h4>Delete Schedule</h4>
+      <p>Are you sure you want to delete this schedule?</p>
+    </div>
+    <div class="modal-footer">
+    	<a href="#!" class="modal-close waves-effect waves-red btn-flat red-text">No</a>
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Yes</a>
+    </div>
+  </div>
+
+
 	<div class="container">
 	    <div class="row">
-		<div class="col s12">
-		<div class="card">
-		    <ul class="collection with-header">
-			<li class="collection-header"><h4>Hobstone Sprinklers</h4></li>
-			{% for zone in zones %}
-			<li class="collection-item">
-			<div>{{zone.name}}
-			{% if zone.status %}
-			<a href="/{{zone.pin}}/off" class="secondary-content">
-			<i class="material-icons red-text">power_off</i>
-			</a>
-			{% else %}
-			<a href="/{{zone.pin}}/on" class="secondary-content">
-			<i class="material-icons green-text">power_settings_new</i>
-			</a>
-			{% endif %}
-			</div>
-			</li>
-			{% endfor %}
-		    </ul>
-		</div>
-		</div>
+				<div class="col s12">
+					<div class="card">
+				    <ul class="collection with-header">
+							<li class="collection-header"><h4>Hobstone Sprinklers</h4></li>
+							{% for zone in zones %}
+							<li class="collection-item">
+							<div>{{zone.name}}
+							{% if zone.status %}
+							<a href="/{{zone.pin}}/off" class="secondary-content">
+							<i class="material-icons red-text">power_off</i>
+							</a>
+							{% else %}
+							<a href="/{{zone.pin}}/on" class="secondary-content">
+							<i class="material-icons green-text">power_settings_new</i></a>
+							{% endif %}
+							</div></li>
+							{% endfor %}
+				    </ul>
+					</div>
+				</div>
+	    </div>
+	    <div class="row">
+  			<div class="col s12">
+  				<div class="card">
+  				    <ul class="collapsible collection with-header">
+  				    	<li class="collection-header" style="line-height: 35px;">
+  				    		<span style="font-size: 30px;">Schedules</span>
+  				    		<a href="#new_modal" class="btn green secondary-content modal-trigger"><i class="material-icons left">add</i>New</a>
+  				    	</li>
+  				    	{% for s in schedules %}
+  				    	<li>
+  				    		<div class="collapsible-header">
+  				    			<i class="material-icons {% if s.enabled %}green{% else %}red{% endif %}-text">power_settings_new</i>
+  				    			{{s.name}}
+  				    		</div>
+  				    		<div class="collapsible-body green lighten-5">
+  				    			<form class="col s12" id="edit_schedule_form_{{s.id}}">
+  				    				<h5>Choose Zones to Schedule:</h5>
+  				    				<div class="input-field">
+										    <select multiple id="schedule_zones_{{s.id}}">
+										    	<option value="" disabled selected>Choose your zone</option>
+										      {% for z in zones %}
+										      <option value="_schedule_{{s.id}}_zone_{{z.id}}">{{z.name}}</option>
+										      {% endfor %}
+										    </select>
+										  </div>
+										  <br>
+									    <h5>Choose Days:</h5>
+									    <p>
+									    {% for d in s.days %}
+									      <label style="padding-right: 5px !important;">
+									        <input type="checkbox" id="schedule_day_{{s.id}}_{{d}}" class="filled-in" />
+									        <span>{{d}}</span>
+									      </label>
+									    {% endfor %}
+									  	</p>
+									  	<br>
+									  	<h5>Choose Time:</h5>
+									  	<input type="text" id="schedule_time_{{s.id}}" value="moment().format('LT');" class="timepicker">
+									  	<br>
+									  	<h5>Choose Duration</h5>
+									  	<input class="right" type="text" value="{{s.duration}} minutes" id="schedule_duration_{{s.id}}_value"/>
+									  	<p class="range-field">
+									      <input type="range" value="{{s.duration}}" id="schedule_duration_{{s.id}}" onchange="updateTextInput(this.id, this.value);" min="5" max="60" step="5" />
+									    </p>
+
+									    
+
+										  <div class="row">
+										  	<div class="col s7">
+										  		<div class="switch">
+										  			Enabled
+												    <label style="padding-left: 10px;">
+												      Off
+												      <input type="checkbox" {% if s.enabled %}checked{%endif%}>
+												      <span class="lever"></span>
+												      On
+												    </label>
+											  	</div>
+										  	</div>
+										  	<div class="col s5">
+										  		<a href="#" class="btn right">Save</a>
+										  		<a href="#delete_modal" class="btn-flat right red-text modal-trigger"><i class="
+										  		material-icons ">delete</i></a>
+										  	</div>									  
+										  </div>
+  				    			</form>
+  				    			<span class="green-text text-lighten-5">.</span>
+  				    		</div>
+  				    	</li>
+  				    	{% endfor %}
+  				    </ul>
+  				</div>
+  			</div>
 	    </div>
 	</div>
+	
 </body>
 </html>
