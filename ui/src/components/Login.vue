@@ -52,11 +52,10 @@ export default {
   },
   methods: {
     validateBeforeLogin () {
-      console.log(this.valErr)
-      this.$validator.validateAll().then((result) => {
+      this.$validator.validateAll().then(() => {
         this.$root.stateIsLoading = true
-        firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((user) => {
-          this.$router.replace('pids')
+        firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
+          this.$router.replace('Home')
         }, (err) => {
           this.$root.stateIsLoading = false
           let errMessage = ''

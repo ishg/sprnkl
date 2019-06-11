@@ -134,6 +134,8 @@ class _DetailsPageState extends State<DetailsPage>
 //  }
 
   Widget buildDashboard(BuildContext context) {
+    bool isSwitched = true;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -148,6 +150,39 @@ class _DetailsPageState extends State<DetailsPage>
             ),
           ),
         ]),
+//        widget.zone.imageUrl.length != 0 ?
+//        Padding(
+//          padding: const EdgeInsets.symmetric(vertical: PAD, horizontal: 2*PAD),
+//          child: ClipRRect(
+//            borderRadius: BorderRadius.all(Radius.circular(PAD)),
+//            child: Image.network(widget.zone.imageUrl),
+//          ))
+//          : new Container(),
+        Padding(
+            padding: const EdgeInsets.all(PAD * 2),
+            child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(PAD)),
+                child: Container(
+                    color: greyColor,
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Text("Schedule"),
+                            Switch(
+                              value: isSwitched,
+                              onChanged: (value) {
+                                setState(() {
+                                  isSwitched = value;
+                                });
+                              },
+                              activeTrackColor: Colors.lightGreenAccent,
+                              activeColor: Colors.green,
+                            )
+                          ],
+                        )
+                      ],
+                    )))),
         Padding(
             padding: const EdgeInsets.all(PAD * 2),
             child: ClipRRect(
@@ -171,7 +206,7 @@ class _DetailsPageState extends State<DetailsPage>
                                     children: <Widget>[
                                       Padding(
                                         padding:
-                                        const EdgeInsets.only(right: PAD),
+                                            const EdgeInsets.only(right: PAD),
                                         child: Icon(
                                           Feather.getIconData("check-circle"),
                                           color: accentColor,
@@ -205,7 +240,7 @@ class _DetailsPageState extends State<DetailsPage>
                                     children: <Widget>[
                                       Padding(
                                         padding:
-                                        const EdgeInsets.only(right: PAD),
+                                            const EdgeInsets.only(right: PAD),
                                         child: Icon(
                                           Feather.getIconData("zap"),
                                           color: orangeColor,
@@ -239,7 +274,7 @@ class _DetailsPageState extends State<DetailsPage>
                                     children: <Widget>[
                                       Padding(
                                         padding:
-                                        const EdgeInsets.only(right: PAD),
+                                            const EdgeInsets.only(right: PAD),
                                         child: Icon(
                                           Feather.getIconData("clock"),
                                           color: purpleColor,
@@ -292,11 +327,13 @@ class _DetailsPageState extends State<DetailsPage>
             )),
         actions: <Widget>[
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                debugPrint("toggling status");
+              },
               splashColor: Colors.transparent,
               icon: Icon(
-                Feather.getIconData("calendar"),
-                color: blackColor,
+                Feather.getIconData("power"),
+                color: widget.zone.status == 0 ? redColor : greenColor,
               )),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),

@@ -8,7 +8,7 @@
     input[type=number]:focus + label,
     .prefix.active,
     textarea.materialize-textarea:focus:not([readonly]) + label {
-      color: #7e57c2;
+      //color: $smt-green;
     }
 
     /* label underline focus color */
@@ -18,8 +18,8 @@
     input[type=tel]:focus,
     input[type=number]:focus,
     textarea.materialize-textarea:focus:not([readonly]) {
-      border-bottom: 1px solid #7e57c2;
-      box-shadow: 0 1px 0 0 #7e57c2;
+      border-bottom: 1px solid $smt-green;
+      box-shadow: 0 1px 0 0 $smt-green;
     }
 
     /* invalid color */
@@ -43,19 +43,19 @@
   }
 
   [type="radio"]:checked + label:after{
-    background-color: $yama-deep-purple;
-    border: 2px solid $yama-deep-purple;
+    background-color: $green;
+    border: 2px solid $green;
   }
-
-  [type="checkbox"].filled-in:checked + label:after {
-    border: 2px solid $yama-deep-purple;
-    background-color: $yama-deep-purple;
 
   [type="checkbox"]:checked + label:before {
-    border-right: 2px solid $yama-deep-purple;
-    border-bottom: 2px solid $yama-deep-purple;
+    border-right: 2px solid $green;
+    border-bottom: 2px solid $green;
   }
-}
+
+  [type="checkbox"].filled-in:checked+span:not(.lever):after {
+    border: 2px solid $smt-green;
+    background-color: $smt-green; 
+  }
 
   
 

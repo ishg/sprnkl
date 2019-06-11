@@ -13,12 +13,23 @@ Vue.use(VeeValidate, {
 
 let app
 
-firebase.auth().onAuthStateChanged(function (user) {
+firebase.auth().onAuthStateChanged(function () {
   if (!app) {
-    app = new Vue({
-      el: '#app',
-      router,
-      components: { App },
+    // app = new Vue({
+    //   el: '#app',
+    //   router,
+    //   components: { App },
+    //   template: '<App />',
+    //   data () {
+    //     return {
+    //       stateIsLoading: false
+    //     }
+    //   }
+    // })
+    app = new Vue({ 
+      el: '#app', 
+      router, 
+      render: h => h(App),
       template: '<App />',
       data () {
         return {
