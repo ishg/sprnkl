@@ -168,6 +168,22 @@ def turn_off_zones(zones):
     print 'Turning off Zone {} on pin {}'.format(idx, pin)
   sync()
 
+# This is for IFTTT Google Assitant actions
+
+
+class Action(Resource):
+
+  def post(self, tag, action):
+    zones = []
+    for z in g.data['zones']:
+      if z['tag'] == tag:
+        zones.append(z['id'])
+    if action == 'on':
+      turn_on_zones(zones)
+    elif action == 'off':
+      turn_off_zones(zones)
+    return {"msg": "Turned {} {} sprinklers".format(action, tag)}
+
 
 class ZoneCollection(Resource):
 
@@ -262,6 +278,7 @@ api.add_resource(ZoneCollection, '/zones')
 api.add_resource(Zone, '/zones/<int:id>')
 api.add_resource(ScheduleCollection, '/schedules')
 api.add_resource(Schedule, '/schedules/<int:id>')
+api.add_resource(Action, '/actions/<tag>/<action>')
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000, debug=DEBUG)
