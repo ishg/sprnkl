@@ -5,10 +5,17 @@ from flask_restful.reqparse import RequestParser
 import datetime
 import json
 
-'''
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
+with open('config.json') as infile:
+  data = json.load(infile)
+  for zone in data['zones']:
+    GPIO.setup(zone['pin'], GPIO.OUT)
+    GPIO.setup(zone['pin'], GPIO.LOW)
+
+
+'''
 zones = [
     {"pin": 11, "name": "zone 1-4 (back tree)", "status": 0},
     {"pin": 9, "name": "zone 2-6 (back garden)", "status": 0},
@@ -21,10 +28,6 @@ zones = [
     {"pin": 15, "name": "zone 11 (front kyaaris)", "status": 0},
     {"pin": 3,"name": "zone 12 (front kyaaris)", "status": 0},
 ]
-
-for zone in zones:
-    GPIO.setup(zone['pin'], GPIO.OUT)
-    GPIO.output(zone['pin'], GPIO.LOW)
 '''
 
 
@@ -64,13 +67,13 @@ schedule_request_parser.add_argument(
 )
 
 
-DEBUG = True
+DEBUG = False
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 api = Api(app, prefix='/api/v1')
 
-CORS(app, resources={r'/*': {'origins': '*'}})
+CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
 @app.before_request
@@ -109,12 +112,12 @@ class Zone(Resource):
     else:
       index = index[0]
       g.data['zones'][index] = args
-      # if args.status == 1:
-      #   GPIO.output(changePin, GPIO.HIGH)
-      # else:
-      #   GPIO.output(changePin, GPIO.LOW)
-      # for i in range(len(g.data['zones'])):
-      #   g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
+      if args.status == 1:
+        GPIO.output(args.pin, GPIO.HIGH)
+      else:
+        GPIO.output(args.pin, GPIO.LOW)
+      for i in range(len(g.data['zones'])):
+        g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
       with open('config.json', 'w') as outfile:
         json.dump(g.data, outfile)
       return {'msg': 'Toggled zone id {}'.format(id)}
@@ -183,11 +186,9 @@ class Schedule(Resource):
         json.dump(g.data, outfile)
       return {'msg': 'Deleted schedule id {}'.format(id)}
 
-
 api.add_resource(ZoneCollection, '/zones')
 api.add_resource(Zone, '/zones/<int:id>')
 api.add_resource(ScheduleCollection, '/schedules')
 api.add_resource(Schedule, '/schedules/<int:id>')
 
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=5000, debug=DEBUG)
+#app.run(host="0.0.0.0", port=5000, debug=DEBUG)
