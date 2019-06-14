@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_restful import Resource, Api
 from flask_restful.reqparse import RequestParser
 import datetime
+from waitress import serve
 import json
 import logging
 logging.basicConfig()
@@ -17,9 +18,6 @@ cron_days = {'Su': 'sun', 'M': 'mon', 'T': 'tue',
              'W': 'wed', 'Th': 'thu', 'F': 'fri', 'Sa': 'sat'}
 
 '''
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-
 zones = [
     {"pin": 11, "name": "zone 1-4 (back tree)", "status": 0},
     {"pin": 9, "name": "zone 2-6 (back garden)", "status": 0},
@@ -33,10 +31,13 @@ zones = [
     {"pin": 3,"name": "zone 12 (front kyaaris)", "status": 0},
 ]
 
+'''
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+
 for zone in zones:
     GPIO.setup(zone['pin'], GPIO.OUT)
     GPIO.output(zone['pin'], GPIO.LOW)
-'''
 
 
 zone_request_parser = RequestParser(bundle_errors=True)
@@ -73,9 +74,6 @@ schedule_request_parser.add_argument(
 schedule_request_parser.add_argument(
     'enabled', type=int, location='json', choices=(0, 1), help="Please enter a 0 or 1 for 'enabled'"
 )
-
-
-DEBUG = True
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -134,16 +132,16 @@ def getData():
 
 @app.after_request
 def putData(response):
-  # for i in range(len(g.data['zones'])):
-  #   g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
+  for i in range(len(g.data['zones'])):
+    g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
   with open('config.json', 'w') as outfile:
     json.dump(g.data, outfile)
   return response
 
 
 def sync():
-  # for i in range(len(g.data['zones'])):
-  #   g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
+  for i in range(len(g.data['zones'])):
+    g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
   with open('config.json', 'w') as outfile:
     json.dump(g.data, outfile)
 
@@ -154,7 +152,7 @@ def turn_on_zones(zones):
     data = json.load(json_file)
   for idx in zones:
     pin = next((x for x in data['zones'] if x['id'] == idx))['pin']
-    #   GPIO.output(zone['pin'], GPIO.HIGH)
+    GPIO.output(zone['pin'], GPIO.HIGH)
     print 'Turning on Zone {} on pin {}'.format(idx, pin)
   sync()
 
@@ -164,7 +162,7 @@ def turn_off_zones(zones):
     data = json.load(json_file)
   for idx in zones:
     pin = next((x for x in data['zones'] if x['id'] == idx))['pin']
-    #   GPIO.output(zone['pin'], GPIO.LOW)
+    GPIO.output(zone['pin'], GPIO.LOW)
     print 'Turning off Zone {} on pin {}'.format(idx, pin)
   sync()
 
@@ -242,7 +240,7 @@ class ScheduleCollection(Resource):
     args = schedule_request_parser.parse_args()
     g.data['schedules'].append(args)
 
-    # TODO: Add to scheduler
+    # Add to scheduler
     add_job(args)
     return {"msg": "Schedule added", "schedule_data": args}
 
@@ -280,5 +278,13 @@ api.add_resource(ScheduleCollection, '/schedules')
 api.add_resource(Schedule, '/schedules/<int:id>')
 api.add_resource(Action, '/actions/<tag>/<action>')
 
+# ENV VARIABLES
+UI_PORT = 8080
+API_PORT = 5000
+
+
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=5000, debug=DEBUG)
+  # app.run(host="0.0.0.0", port=5000, debug=DEBUG)
+
+  serve(app, host="0.0.0.0", port=API_PORT)
+  print 'Serving API on port ', API_PORT
