@@ -25,15 +25,14 @@
 import firebase from 'firebase'
 export default {
   name: 'Dashboard',
-  data () {
+  data() {
     return {
       currentUser: firebase.auth().currentUser.email
     }
   },
-  mounted () {
-  },
+  mounted() {},
   methods: {
-    logout () {
+    logout() {
       this.$root.stateIsLoading = true
       firebase.auth().signOut().then(() => {
         this.$router.replace('login')
@@ -51,12 +50,14 @@ nav {
   background-color: $smt-green;
   height: 56px;
   line-height: 56px;
+
   .brand-logo {
     margin: auto 1rem;
     font-size: 1.8rem;
     font-family: Nunito;
     font-weight: bold;
   }
+
   i {
     height: 56px;
     line-height: 56px;
@@ -69,7 +70,7 @@ nav {
 
 @media only screen and (max-width: 992px) {
   nav .brand-logo {
-      margin: 0;
+    margin: 0;
   }
 }
 
@@ -84,4 +85,5 @@ nav {
     transform: translateX(0%) !important
   }
 }
+
 </style>

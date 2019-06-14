@@ -5,7 +5,7 @@
         <h4>New Schedule</h4>
         <div class="section">
           <div class="input-field col s12">
-            <input v-validate="'required'" name="new_schedule_name" v-model="new_schedule.name" type="text">
+            <input name="new_schedule_name" v-model="new_schedule.name" type="text">
             <label style="left: 0; margin-left: 0;" for="new_schedule_name">Schedule Name</label>
           </div>
         </div>
@@ -167,6 +167,7 @@ export default {
   },
   mounted() {
     const vm = this
+    vm.$root.stateIsLoading = true
     vm.getData()
     setTimeout(function() {
       vm.initM()
@@ -256,6 +257,7 @@ export default {
           }
         }).then((res) => {
           vm.schedules = res.data
+          vm.$root.stateIsLoading = false
           vm.initM()
         })
       })
@@ -265,6 +267,7 @@ export default {
 
     updateZone(z) {
       const vm = this
+      vm.$root.stateIsLoading = true
       z.status = z.status ? 1 : 0
       axios.put(vm.api.basepath + '/zones/' + z.id, z, {
         auth: {
@@ -276,6 +279,7 @@ export default {
         vm.getData()
       }).catch((error) => {
         console.log(error)
+        vm.$root.stateIsLoading = false
         swal("Oops!", "Something went wrong. Please try again.", "error")
       })
     },
@@ -297,6 +301,7 @@ export default {
       if (errors.length > 0) {
         swal("Invalid inputs", String(errors).replace(/,/g, ''), "error");
       } else {
+        vm.$root.stateIsLoading = true
         var schedule = {
           id: vm.nextId(vm.schedules),
           name: vm.new_schedule.name,
@@ -319,6 +324,7 @@ export default {
           vm.getData()
         }).catch((error) => {
           console.log(error)
+          vm.$root.stateIsLoading = false
           swal("Oops!", "Something went wrong. Please try again.", "error")
         })
         vm.resetForm()
@@ -348,6 +354,7 @@ export default {
       if (errors.length > 0) {
         swal("Invalid inputs", String(errors).replace(/,/g, ''), "error");
       } else {
+        vm.$root.stateIsLoading = true
         axios.put(vm.api.basepath + '/schedules/' + s.id, s, {
           auth: {
             username: process.env.VUE_APP_API_USERNAME,
@@ -358,6 +365,7 @@ export default {
           vm.getData()
         }).catch((error) => {
           console.log(error)
+          vm.$root.stateIsLoading = false
           swal("Oops!", "Something went wrong. Please try again.", "error")
         })
       }
@@ -373,6 +381,7 @@ export default {
         })
         .then((willDelete) => {
           if (willDelete) {
+            vm.$root.stateIsLoading = true
             axios.delete(vm.api.basepath + '/schedules/' + id, {
               auth: {
                 username: process.env.VUE_APP_API_USERNAME,
@@ -380,14 +389,17 @@ export default {
               }
             }).then((res) => {
               console.log(res)
+              swal("Schedule deleted", {
+                icon: "success",
+              });
               vm.getData()
             }).catch((error) => {
               console.log(error)
+              vm.$root.stateIsLoading = false
+
               swal("Oops!", "Something went wrong. Please try again.", "error")
             })
-            swal("Schedule deleted", {
-              icon: "success",
-            });
+
           }
         });
     }
