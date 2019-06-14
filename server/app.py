@@ -3,9 +3,14 @@ from flask_cors import CORS
 from flask_restful import Resource, Api
 from flask_restful.reqparse import RequestParser
 import datetime
+from waitress import serve
 import json
 import logging
 logging.basicConfig()
+import os
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+os.chdir(dir_path)
 
 from apscheduler.schedulers.background import BackgroundScheduler
 scheduler = BackgroundScheduler({
@@ -78,7 +83,6 @@ schedule_request_parser.add_argument(
 )
 
 
-DEBUG = False
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -117,7 +121,8 @@ with open('config.json') as infile:
   data = json.load(infile)
   if len(data['schedules']) > 0:
     for s in data['schedules']:
-      add_job(s)
+      if(s['enabled'] == 1):
+        add_job(s)
 scheduler.start()
 
 
@@ -126,6 +131,8 @@ def update_job(s):
 
 
 def delete_job(id):
+  scheduler.remove_job('sched_{}_start'.format(id))
+  scheduler.remove_job('sched_{}_end'.format(id))
   pass
 
 
@@ -137,16 +144,16 @@ def getData():
 
 @app.after_request
 def putData(response):
-  # for i in range(len(g.data['zones'])):
-  #   g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
+  for i in range(len(g.data['zones'])):
+    g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
   with open('config.json', 'w') as outfile:
     json.dump(g.data, outfile)
   return response
 
 
 def sync():
-  # for i in range(len(g.data['zones'])):
-  #   g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
+  for i in range(len(g.data['zones'])):
+    g.data['zones'][i]['status'] = GPIO.input(g.data['zones'][i]['pin'])
   with open('config.json', 'w') as outfile:
     json.dump(g.data, outfile)
 
@@ -157,9 +164,8 @@ def turn_on_zones(zones):
     data = json.load(json_file)
   for idx in zones:
     pin = next((x for x in data['zones'] if x['id'] == idx))['pin']
-    #   GPIO.output(zone['pin'], GPIO.HIGH)
+    GPIO.output(pin, GPIO.HIGH)
     print 'Turning on Zone {} on pin {}'.format(idx, pin)
-  sync()
 
 
 def turn_off_zones(zones):
@@ -167,9 +173,8 @@ def turn_off_zones(zones):
     data = json.load(json_file)
   for idx in zones:
     pin = next((x for x in data['zones'] if x['id'] == idx))['pin']
-    #   GPIO.output(zone['pin'], GPIO.LOW)
+    GPIO.output(pin, GPIO.LOW)
     print 'Turning off Zone {} on pin {}'.format(idx, pin)
-  sync()
 
 # This is for IFTTT Google Assitant actions
 
@@ -178,9 +183,10 @@ class Action(Resource):
 
   def post(self, tag, action):
     zones = []
-    for z in g.data['zones']:
-      if z['tag'] == tag:
-        zones.append(z['id'])
+    if tag.lower() == 'back':
+      zones = [1,2,3,5]
+    elif tag.lower() == 'front':
+      zones = [7,8,9,10]
     if action == 'on':
       turn_on_zones(zones)
     elif action == 'off':
@@ -245,7 +251,7 @@ class ScheduleCollection(Resource):
     args = schedule_request_parser.parse_args()
     g.data['schedules'].append(args)
 
-    # TODO: Add to scheduler
+    # Add to scheduler
     add_job(args)
     return {"msg": "Schedule added", "schedule_data": args}
 
@@ -265,6 +271,8 @@ class Schedule(Resource):
     else:
       index = index[0]
       g.data['schedules'][index] = args
+      delete_job(id)
+      add_job(args)
       return {'msg': 'Updated schedule id {}'.format(id)}
 
   def delete(self, id):
@@ -274,6 +282,7 @@ class Schedule(Resource):
     else:
       index = index[0]
       g.data['schedules'].pop(index)
+      delete_job(id)
       return {'msg': 'Deleted schedule id {}'.format(id)}
 
 api.add_resource(ZoneCollection, '/zones')
@@ -282,4 +291,14 @@ api.add_resource(ScheduleCollection, '/schedules')
 api.add_resource(Schedule, '/schedules/<int:id>')
 api.add_resource(Action, '/actions/<tag>/<action>')
 
-#app.run(host="0.0.0.0", port=5000, debug=DEBUG)
+# ENV VARIABLES
+UI_PORT = 8080
+API_PORT = 5000
+
+
+if __name__ == "__main__":
+  # app.run(host="0.0.0.0", port=5000, debug=DEBUG)
+
+  serve(app, host="0.0.0.0", port=API_PORT)
+  print 'Serving API on port ', API_PORT
+  
