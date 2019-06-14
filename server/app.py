@@ -46,7 +46,6 @@ zones = [
 ]
 '''
 
-
 zone_request_parser = RequestParser(bundle_errors=True)
 zone_request_parser.add_argument(
     'id', type=int, required=True, help="Plaese enter a valid integer as 'id'")
@@ -81,8 +80,6 @@ schedule_request_parser.add_argument(
 schedule_request_parser.add_argument(
     'enabled', type=int, location='json', choices=(0, 1), help="Please enter a 0 or 1 for 'enabled'"
 )
-
-
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -301,4 +298,3 @@ if __name__ == "__main__":
 
   serve(app, host="0.0.0.0", port=API_PORT)
   print 'Serving API on port ', API_PORT
-  
